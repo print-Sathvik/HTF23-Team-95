@@ -156,13 +156,6 @@ module.exports = (sequelize, DataTypes) => {
       }
       return null;
     }
-
-    // static async reschedule() {
-    //   if(clash):
-    //     this.reschedule(cleahed)
-    //   write into db cyrrrent
-    // }
-
   }
   Appointment.init(
     {

@@ -63,7 +63,7 @@ passport.use(
           }
         })
         .catch(() => {
-          return done(null, false, { message: "Organiser does not exist" });
+          return done(null, false, { message: "Doctor does not exist" });
         });
     }
   )
@@ -484,7 +484,6 @@ app.post(
           organizerId: request.body.organizerId,
         };
         return response.redirect("/clash");
-        //GDC asked here
       }
       await Appointment.addAppointment(
         request.body.organizerId,
