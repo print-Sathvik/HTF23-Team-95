@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <link href="/css/styles.css" rel="stylesheet" />
+    <title>Appointment Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      var token = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
+      function redirect()
+      {
+        if(document.getElementById("organizerId").value == "")
+        {
+            alert("Enter ID of the organizer with whom you want to book an appointment")
+            return
+        }
+        window.location.href = '/appointment/' + document.getElementById("organizerId").value
+      }
+
+      function deleteAppointment(id)
+      {
+          fetch(`/appointment`, {
+                method: "delete",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    id: id,
+                    "_csrf": token
+                })
+            })
+            .then((res) => {
+                if(res.ok) {
+                    window.location.reload();
+                }
+            })
+            .catch((err) => console.error(err));
+      }
+    </script>
+</head>
+<body>
+    <%- include('header.ejs', {user: "admin"}) %>
+    <div class="grid grid-cols-7">
+        <div class="col-start-3 col-span-3">
+          <% if(messages && messages.error && messages.error.length > 0)  { %>
+            <% for(var i=0; i<messages.error.length; i++) { %>
+                    <p class="flash-error"> <%= messages.error[i] %></p>
+            <% } %>
+          <% } %>
+          <% if(messages && messages.success && messages.success.length > 0)  { %>
+            <% for(var i=0; i<messages.success.length; i++) { %>
+                    <p class="flash-success"> <%= messages.success[i] %></p>
+            <% } %>
+          <% } %>
+          <div class="flex gap-2 py-4">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <div class="flex-auto mx-2 my-3">
+                <input type="text" name="organizerId" id="organizerId" placeholder="Organizer ID" class="border border-gray-300 rounded text-gray-900 w-full p-1" required/>
+              </div>
+              <div class="centerElement py-3 flex-auto">
+                <button type="button" onclick="redirect()" class="bg-green-600 text-white px-1 py-1.5 rounded font-medium">New Appointment</button>
+              </div>
+          </div>
+          <h2 class="centerElement text-xl">Welcome <%= name %></h2>
+          <h2 class="centerElement text-2xl py-2 bg-green-600 text-white">Upcoming Appointments</h2>
+          <%- include('appointments.ejs', {appointments: upcoming, organizerNames: organizerNames1}) %>
+          <h2 class="centerElement text-2xl py-2 mt-5 bg-red-600 text-white">Past Appointments</h2>
+          <%- include('appointments.ejs', {appointments: completed, organizerNames: organizerNames2}) %>
+        </div>
+    </div>
+</body>
+</html>
