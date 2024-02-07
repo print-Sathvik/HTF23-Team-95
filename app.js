@@ -227,18 +227,6 @@ app.post("/guest", async (request, response) => {
     response.redirect("/login");
   }
 });
-
-app.get(
-  "/organizer/login",
-  connectEnsureLogin.ensureLoggedOut({ redirectTo: "/organizer/dashboard" }),
-  (request, response) => {
-    response.render("login", {
-      formAction: "/session",
-      csrfToken: request.csrfToken(),
-    });
-  }
-);
-
 app.post(
   "/session",
   passport.authenticate("OrganizerAuthenticate", {
@@ -251,12 +239,37 @@ app.post(
   }
 );
 
+app.get(
+  "/organizer/login",
+  connectEnsureLogin.ensureLoggedOut({ redirectTo: "/organizer/dashboard" }),
+  (request, response) => {
+    response.render("login", {
+      formAction: "/session",
+      csrfToken: request.csrfToken(),
+    });
+  }
+);
+
+
+
 app.get("/login", connectEnsureLogin.ensureLoggedOut(), (request, response) => {
   response.render("login", {
     formAction: "/guestSession",
     csrfToken: request.csrfToken(),
   });
 });
+
+
+app.get("/signout", (request, response, next) => {
+  request.logout((err) => {
+    if (err) {
+      return next(err);
+    }
+    response.redirect("/");
+  });
+});
+
+
 
 app.post(
   "/guestSession",
@@ -269,15 +282,6 @@ app.post(
     response.redirect("/dashboard");
   }
 );
-
-app.get("/signout", (request, response, next) => {
-  request.logout((err) => {
-    if (err) {
-      return next(err);
-    }
-    response.redirect("/");
-  });
-});
 
 app.get(
   "/organizer/dashboard",
